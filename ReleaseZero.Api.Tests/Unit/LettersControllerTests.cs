@@ -12,7 +12,7 @@ using Xunit;
 
 namespace ReleaseZero.Api.Tests.Unit
 {
-    public class FooControllerTests
+    public class LettersControllerTests
     {
         private readonly ILogger<LettersController> _logger = new Mock<ILogger<LettersController>>().Object;
 
@@ -37,18 +37,18 @@ namespace ReleaseZero.Api.Tests.Unit
         }
 
         [Theory(DisplayName = "Get() given a valid id returns a letter")]
-        [InlineData(1, "Alpha")]
-        [InlineData(5, "Echo")]
-        [InlineData(13, "Mancy")]
-        [InlineData(19, "Sierra")]
-        [InlineData(26, "Zulu")]
-        public async Task GetWithValidParamReturnsOneLetter(int id, string name)
+        [InlineData('a', "Alfa")]
+        [InlineData('e', "Echo")]
+        [InlineData('m', "Mike")]
+        [InlineData('s', "Sierra")]
+        [InlineData('z', "Zulu")]
+        public async Task GetWithValidParamReturnsOneLetter(char character, string name)
         {
             using (var context = GetFooContextWithData())
             {
                 using (var controller = new LettersController(_logger, context))
                 {
-					var result = await controller.Get(id) as OkObjectResult;
+                    var result = await controller.Get(character) as OkObjectResult;
 
 					Assert.NotNull(result);
 
@@ -61,20 +61,18 @@ namespace ReleaseZero.Api.Tests.Unit
             }
         }
 
-		[Theory(DisplayName = "Get() given an invalid id returns NotFound")]
-		[InlineData(-1)]
-		[InlineData(0)]
-		[InlineData(27)]
-		[InlineData(42)]
-		[InlineData(Int32.MinValue)]
-        [InlineData(Int32.MaxValue)]
-		public async Task GetWithInvalidParamReturnsNotFound(int id)
+		[Theory(DisplayName = "Get() given an invalid character returns NotFound")]
+        [InlineData('*')]
+		[InlineData('#')]
+		[InlineData('2')]
+		[InlineData('%')]
+		public async Task GetWithInvalidParamReturnsNotFound(char character)
 		{
 			using (var context = GetFooContextWithData())
 			{
 				using (var controller = new LettersController(_logger, context))
 				{
-					var result = await controller.Get(id) as NotFoundResult;
+					var result = await controller.Get(character) as NotFoundResult;
 
 					Assert.NotNull(result);
 				}

@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReleaseZero.Api", "ReleaseZero.Api\ReleaseZero.Api.csproj", "{9B6E6393-98E0-422A-9843-67F56BEEE327}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReleaseZero.Api.Tests", "ReleaseZero.Api.Tests\ReleaseZero.Api.Tests.csproj", "{6560F520-0CD3-45BD-A450-FD34B8592941}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,5 +15,9 @@ Global
 		{9B6E6393-98E0-422A-9843-67F56BEEE327}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B6E6393-98E0-422A-9843-67F56BEEE327}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B6E6393-98E0-422A-9843-67F56BEEE327}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6560F520-0CD3-45BD-A450-FD34B8592941}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6560F520-0CD3-45BD-A450-FD34B8592941}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6560F520-0CD3-45BD-A450-FD34B8592941}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6560F520-0CD3-45BD-A450-FD34B8592941}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -15,178 +15,151 @@ namespace ReleaseZero.Api.Controllers
     /// Controller for testing purposes. Doesn't do anything terribly useful.
     /// </summary>
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/foo")]
-    //[Route("api/foo")]
-    public class FooController : Controller
+    [Route("api/v{version:apiVersion}/letters")]
+    [Route("api/letters")]
+    [ValidateModel]
+    public class LettersController : Controller
     {
-        private readonly ILogger<FooController> _logger;
+        private readonly ILogger<LettersController> _logger;
 
-        private readonly FooContext _context;
+        private readonly LettersContext _context;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="T:ReleaseZero.Api.Controllers.FooController"/> class.
+		/// Initializes a new instance of the <see cref="T:ReleaseZero.Api.Controllers.LetterController"/> class.
 		/// </summary>
 		/// <param name="logger">Logger to use, provided by constructor injection</param>
 		/// <param name="context">Entity Framework context to use, provided by constructor injection</param>
-		public FooController(ILogger<FooController> logger, FooContext context)
+		public LettersController(ILogger<LettersController> logger, LettersContext context)
         {
             _logger = logger;
             _context = context;
         }
 
 		/// <summary>
-		/// Gets all foo instances (NATO Phonetic alphabet)
+		/// Gets all letter instances (NATO Phonetic alphabet)
 		/// </summary>
-		/// <returns>All 26 Foo instances</returns>
-		/// <response code="200">Returns all 26 Foo instances</response>
-		/// <response code="400">An error occurred</response>
-		/// <response code="404">If there are no Foo instances available</response>
+		/// <returns>All 26 letter instances</returns>
+		/// <response code="200">Returns all 26 letter instances</response>
+		/// <response code="404">If there are no letter instances available</response>
 		[HttpGet]
-        [ProducesResponseType(typeof(List<Foo>), 200)]
-        [ProducesResponseType(typeof(List<Foo>), 400)]
-        [ProducesResponseType(typeof(List<Foo>), 404)]
+        [ProducesResponseType(typeof(IEnumerable<Letter>), 200)]
+        [ProducesResponseType(typeof(void), 404)]
         public async Task<IActionResult> Get()
         {
-            try
-            {
-                var foos = await _context.Foos.ToListAsync();
+			var letters = await _context.Letters.ToListAsync();
 
-                if (foos.Any())
-                {
-                    return Ok(foos);
-                }
+			if (letters.Any())
+			{
+				return Ok(letters);
+			}
 
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(0, ex, ex.Message);
-
-                return BadRequest();
-            }
+			return NotFound();
         }
 
 		/// <summary>
 		/// Gets a specific letter in the collection
 		/// </summary>
-		/// <returns>The Foo instance requested</returns>
-		/// <param name="id">The ID value of the requested Foo instance</param>
-		/// <response code="200">The specified Foo object</response>
-		/// <response code="400">An error occurred</response>
-		/// <response code="404">The requested Foo instance was not found</response>
-		[HttpGet("{id}")]
-		[ProducesResponseType(typeof(IEnumerable<Foo>), 200)]
-		[ProducesResponseType(typeof(IEnumerable<Foo>), 400)]
-		[ProducesResponseType(typeof(IEnumerable<Foo>), 404)]
-        public async Task<IActionResult> Get(int id)
+		/// <returns>The letter instance requested</returns>
+		/// <param name="character">The character value of the requested letter instance</param>
+		/// <response code="200">The specified letter object</response>
+		/// <response code="404">The requested letter instance was not found</response>
+		[HttpGet("{character}")]
+		[ProducesResponseType(typeof(Letter), 200)]
+		[ProducesResponseType(typeof(void), 404)]
+        public async Task<IActionResult> Get(char character)
         {
-			try
+            var letter = await _context.Letters.FirstOrDefaultAsync(x => x.Character.Equals(character));
+
+			if (letter != null)
 			{
-                var foo = await _context.Foos.FirstOrDefaultAsync(x => x.Id == id);
-
-                if (foo != null){
-                    return Ok(foo);
-                }
-
-				return NotFound();
+				return Ok(letter);
 			}
-			catch (Exception ex)
-			{
-				_logger.LogError(0, ex, ex.Message);
 
-				return BadRequest();
-			}
+			return NotFound();
         }
 
 		/// <summary>
-		/// Updates an existing Foo object
+		/// Updates an existing letter object
 		/// </summary>
-		/// <returns>The updated Foo object</returns>
-		/// <param name="id">The ID value of the requested Foo instance</param>
-		/// <param name="fooDocument">JsonPatchDocument to apply</param>
-		/// <response code="200">Returns the updated Foo object</response>
-		/// <response code="400">An error occurred</response>
-		/// <response code="404">The requested Foo object was not found</response>
-		[HttpPatch("{id}")]
-        [ProducesResponseType(typeof(IEnumerable<Foo>), 200)]
-        [ProducesResponseType(typeof(IEnumerable<Foo>), 400)]
-		[ProducesResponseType(typeof(IEnumerable<Foo>), 404)]
-        public async Task<IActionResult> Patch(int id, [FromBody]JsonPatchDocument<Foo> fooDocument)
+		/// <returns>The updated letter object</returns>
+		/// <param name="character">The character value of the requested letter instance</param>
+		/// <param name="letterDocument">JsonPatchDocument to apply</param>
+		/// <response code="200">Returns the updated letter object</response>
+		/// <response code="404">The requested letter object was not found</response>
+		[HttpPatch("{character}")]
+        [ProducesResponseType(typeof(Letter), 200)]
+		[ProducesResponseType(typeof(void), 404)]
+        public async Task<IActionResult> Patch(char character, [FromBody]JsonPatchDocument<Letter> letterDocument)
         {
-            try
-            {
-                var fooToUpdate = await _context.Foos.SingleOrDefaultAsync(x => x.Id == id);
+			var letterToUpdate = await _context.Letters.SingleOrDefaultAsync(x => x.Character.Equals(character));
 
-                if (fooToUpdate != null)
-                {
-                    fooDocument.ApplyTo(fooToUpdate);
-
-                    _context.SaveChanges();
-
-                    return Ok(fooToUpdate);
-                }
-
-                return NotFound();
-            }
-			catch (Exception ex)
+			if (letterToUpdate != null)
 			{
-				_logger.LogError(0, ex, ex.Message);
+				letterDocument.ApplyTo(letterToUpdate);
 
-				return BadRequest();
+				_context.SaveChanges();
+
+				return Ok(letterToUpdate);
 			}
+
+			return NotFound();
         }
 
         /// <summary>
-        /// Creates a new Foo
+        /// Creates a new letter
         /// </summary>
         /// <returns>The post.</returns>
-        /// <param name="foo">Foo.</param>
+        /// <param name="letter">letter.</param>
+        /// <exception cref="T:System.NotImplementedException"></exception>
         [HttpPost]
-        [ProducesResponseType(typeof(Foo), 201)]
-        [ProducesResponseType(typeof(IEnumerable<Foo>), 400)]
-        public async Task<IActionResult> Post([FromBody]Foo foo)
+        [ProducesResponseType(typeof(Letter), 201)]
+        [ProducesResponseType(typeof(IEnumerable<Letter>), 400)]
+        public async Task<IActionResult> Post([FromBody]Letter letter)
         {
             try
             {
-                if (foo.Id < 1 || foo.Id > 26)
-                {
-                    return Res
-                }
-            }
-			catch (Exception ex)
-			{
-				_logger.LogError(0, ex, ex.Message);
+                var newLetter = await _context.Letters.AddAsync(letter);
 
-				return BadRequest();
-			}
+                _context.SaveChanges();
+
+                return Ok(newLetter.Entity);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(new EventId(0), ex, ex.Message);
+
+                return BadRequest(ex);
+            }
         }
 
+        /// <summary>
+        /// Put the specified id and value.
+        /// </summary>
+        /// <returns>The put.</returns>
+        /// <param name="id">Identifier.</param>
+        /// <param name="value">Value.</param>
         [HttpPut("{id}")]
         public void Put(int id, [FromBody]string value)
         {
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        /// <summary>
+        /// Delete the specified character.
+        /// </summary>
+        /// <returns>The delete.</returns>
+        /// <param name="character">Character.</param>
+        [HttpDelete("{character}")]
+        public async Task<IActionResult> Delete(char character)
         {
-            try
-            {
-                var fooToDelete = await _context.Foos.FirstOrDefaultAsync(x => x.Id == id);
+			var letterToDelete = await _context.Letters.FirstOrDefaultAsync(x => x.Character.Equals(character));
 
-                if (fooToDelete != null)
-                {
-                    _context.Remove(fooToDelete);
-                    _context.SaveChanges();
-                }
+			if (letterToDelete != null)
+			{
+				_context.Remove(letterToDelete);
+				_context.SaveChanges();
+			}
 
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(0, ex, ex.Message);
-
-                return BadRequest();
-            }
+			return Ok();
         }
     }
 }
